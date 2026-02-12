@@ -23,7 +23,7 @@ const _WARNINGS_POLL_INTERVAL_SEC := 0.2
 const _NULL_STEP_WARNING_STABLE_POLLS := 2
 
 ## Maps symbolic target ids to scene nodes resolved by actions.
-@export var target_map: Dictionary[StringName, Node] = { &"default": null }:
+@export var target_map: Dictionary[StringName, Node] = { }:
 	set(v):
 		target_map = v
 		_queue_warning_refresh()
@@ -79,6 +79,7 @@ var _suppress_finished_signal: bool = false
 
 ## Initializes editor configuration warning state when the node enters the tree.
 func _enter_tree() -> void:
+	_normalize_legacy_default_target_entry()
 	set_process(Engine.is_editor_hint())
 	_queue_warning_refresh()
 
@@ -270,6 +271,17 @@ func _queue_warning_refresh() -> void:
 	if not Engine.is_editor_hint():
 		return
 	_warnings_refresh_requested = true
+
+
+## Removes legacy `default: null` placeholders from serialized maps.
+func _normalize_legacy_default_target_entry() -> void:
+	if not target_map.has(&"default"):
+		return
+	if target_map.get(&"default") != null:
+		return
+	var normalized_map := target_map.duplicate()
+	normalized_map.erase(&"default")
+	target_map = normalized_map
 
 
 ## Applies debounced warning refresh and updates inspector only on changes.

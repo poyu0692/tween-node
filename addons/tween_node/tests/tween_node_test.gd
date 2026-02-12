@@ -977,6 +977,23 @@ func test_preview_playing_property_is_editor_only_and_non_persistent() -> void:
 	assert_bool((usage & PROPERTY_USAGE_STORAGE) == 0).is_true()
 
 
+func test_target_map_is_empty_by_default() -> void:
+	var tween_node := auto_free(TweenNode.new())
+
+	assert_bool(tween_node.target_map.is_empty()).is_true()
+	assert_bool(tween_node.target_map.has(&"default")).is_false()
+
+
+func test_target_map_normalization_removes_legacy_null_default_entry() -> void:
+	var tween_node := auto_free(TweenNode.new())
+	_set_private(tween_node, &"target_map", { &"default": null })
+
+	_call_private(tween_node, &"_normalize_legacy_default_target_entry")
+
+	assert_bool(tween_node.target_map.has(&"default")).is_false()
+	assert_bool(tween_node.target_map.is_empty()).is_true()
+
+
 func test_configuration_warnings_reports_missing_sequence_and_target_map() -> void:
 	var tween_node := auto_free(TweenNode.new())
 	var target_map: Dictionary[StringName, Node] = { }
