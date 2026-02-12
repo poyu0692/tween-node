@@ -1076,6 +1076,53 @@ func test_warning_utils_build_bundle_matches_expected_messages() -> void:
 	assert_int(null_step_warnings.size()).is_equal(0)
 
 
+func test_warning_utils_does_not_require_default_when_unused() -> void:
+	var target := auto_free(Node2D.new())
+	add_child(target)
+
+	var action := TweenSet.new()
+	action.target_id = &"foo"
+	action.property = &"position"
+	action.value = Vector2.ZERO
+
+	var sequence := TweenSequence.new()
+	sequence.steps = [action]
+
+	var target_map: Dictionary[StringName, Node] = { &"foo": target as Node }
+	var warning_bundle := WarningUtils.build_warning_bundle(target_map, sequence)
+	var warnings := warning_bundle.get("warnings", PackedStringArray()) as PackedStringArray
+
+	assert_bool(_warnings_contains_text(warnings, "required key 'default'")).is_false()
+
+
+func test_tween_set_applies_indexed_property_path() -> void:
+	var root := auto_free(Node2D.new())
+	add_child(root)
+
+	var target := auto_free(Node2D.new())
+	root.add_child(target)
+	target.position = Vector2(1, 2)
+
+	var action := TweenSet.new()
+	action.target_id = &"default"
+	action.property = &"position:x"
+	action.value = 10.0
+
+	var sequence := TweenSequence.new()
+	sequence.steps = [action]
+
+	var tween_node := auto_free(TweenNode.new())
+	root.add_child(tween_node)
+	tween_node.target_map = { &"default": target as Node }
+	tween_node.sequence = sequence
+
+	tween_node.play()
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	assert_float(target.position.x).is_equal(10.0)
+
+
 func test_warning_utils_compose_includes_or_excludes_null_step_warnings() -> void:
 	var warnings := PackedStringArray()
 	warnings.append("base warning")

@@ -31,13 +31,19 @@ func _apply_to_tween(tween: Tween, target_map: Dictionary[StringName, Node]) -> 
 	var target := _resolve_target(target_map, target_id, "SetValue")
 	if target == null:
 		return
-	if not WarningUtils.is_property_name_valid(target, property):
-		push_warning("SetValue: property '%s' does not exist on '%s'." % [property, target.name])
+	var property_path := String(property)
+	if not WarningUtils.is_property_path_valid(target, property_path):
+		push_warning(
+			"SetValue: property '%s' does not exist on '%s'." % [property_path, target.name]
+		)
 		return
 
-	tween.tween_callback(target.set.bind(property, value))
+	if property_path.contains(":"):
+		tween.tween_callback(target.set_indexed.bind(NodePath(property_path), value))
+	else:
+		tween.tween_callback(target.set.bind(property, value))
 
 
 ## Builds an inspector-friendly action label.
 func _get_action_resource_name() -> String:
-	return "📥%s::%s = %s" % [target_id, property, str(value)]
+	return "📥%s::%s = %s" % [target_id, String(property), str(value)]

@@ -13,8 +13,6 @@ static func build_warning_bundle(
 
 	if target_map.is_empty():
 		warnings.append("target_map is empty. Add at least one target entry.")
-	elif not target_map.has(&"default"):
-		warnings.append("target_map does not contain the required key 'default'.")
 
 	for target_id in target_map.keys():
 		var mapped_target := target_map.get(target_id)
@@ -30,6 +28,9 @@ static func build_warning_bundle(
 	if sequence.steps.is_empty():
 		warnings.append("sequence.steps is empty.")
 		return _build_warning_bundle(warnings, null_step_warnings)
+
+	if _actions_use_target_id(sequence.steps, &"default") and not target_map.has(&"default"):
+		warnings.append("target_map does not contain the required key 'default'.")
 
 	collect_warnings(sequence.steps, target_map, warnings, null_step_warnings, "steps")
 	return _build_warning_bundle(warnings, null_step_warnings)
@@ -126,10 +127,13 @@ static func collect_warnings(
 			)
 			if action.property == &"":
 				warnings.append("%s property is empty." % action_path)
-			elif set_target != null and not is_property_name_valid(set_target, action.property):
+			elif (
+				set_target != null
+				and not is_property_path_valid(set_target, String(action.property))
+			):
 				warnings.append(
 					"%s property '%s' does not exist on '%s'."
-					% [action_path, action.property, set_target.name],
+					% [action_path, String(action.property), set_target.name],
 				)
 			continue
 
@@ -201,6 +205,26 @@ static func collect_warnings(
 
 		if action is TweenWait and action.duration < 0.0:
 			warnings.append("%s duration must be >= 0.0 (got %s)." % [action_path, action.duration])
+
+
+## Returns true when any action (including nested loop actions) references the given target_id.
+static func _actions_use_target_id(actions: Array[TweenAction], target_id: StringName) -> bool:
+	for action in actions:
+		if action == null:
+			continue
+		if action is TweenLoop:
+			if _actions_use_target_id(action.actions, target_id):
+				return true
+			continue
+		if action is TweenProperty and action.target_id == target_id:
+			return true
+		if action is SetValue and action.target_id == target_id:
+			return true
+		if action is CallMethod and action.target_id == target_id:
+			return true
+		if action is TweenMethod and action.target_id == target_id:
+			return true
+	return false
 
 
 ## Validates `target_id` mapping and returns a usable target for warning checks.

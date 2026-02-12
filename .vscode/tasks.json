@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "git: commit and push",
+			"type": "shell",
+			"command": "git add addons/tween_node/scripts/actions/set_value.gd addons/tween_node/scripts/internal/tween_node_warning_utils.gd addons/tween_node/scripts/internal/tween_node_preview_state_utils.gd addons/tween_node/scripts/internal/tween_node_runtime_seek_utils.gd addons/tween_node/tests/tween_node_test.gd && git commit -m \"tween_node: support indexed property paths in SetValue\" -m \"- SetValue validates and applies property paths (set_indexed)\" -m \"- Preview/seek state capture uses property paths\" -m \"- Warn about missing 'default' target only when used\" && git push",
+			"isBackground": false
+		}
+	]
+}

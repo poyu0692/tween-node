@@ -119,9 +119,9 @@ static func _collect_states(
 			)
 			continue
 		if action is SetValue:
-			_capture_property_name_state(
+			_capture_property_path_state(
 				action.target_id,
-				action.property,
+				String(action.property),
 				target_map,
 				out,
 			)
@@ -158,27 +158,6 @@ static func _capture_property_path_state(
 	if out.has(state_key):
 		return
 	out[state_key] = target.get_indexed(property_path)
-
-
-## Captures a snapshot for a property-name style action if valid.
-static func _capture_property_name_state(
-		target_id: StringName,
-		property_name: StringName,
-		target_map: Dictionary[StringName, Node],
-		out: Dictionary[String, Variant],
-) -> void:
-	if property_name == &"":
-		return
-	var target := _resolve_state_target(target_map, target_id)
-	if target == null:
-		return
-	if not WarningUtils.is_property_name_valid(target, property_name):
-		return
-	var property_path := String(property_name)
-	var state_key := build_state_key(target.get_instance_id(), property_path)
-	if out.has(state_key):
-		return
-	out[state_key] = target.get(property_name)
 
 
 ## Resolves a valid snapshot target from `target_map`.
