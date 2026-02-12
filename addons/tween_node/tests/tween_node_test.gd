@@ -1113,7 +1113,8 @@ func test_tween_set_applies_indexed_property_path() -> void:
 
 	var tween_node := auto_free(TweenNode.new())
 	root.add_child(tween_node)
-	tween_node.target_map = { &"default": target as Node }
+	var target_map: Dictionary[StringName, Node] = { &"default": target as Node }
+	tween_node.target_map = target_map
 	tween_node.sequence = sequence
 
 	tween_node.play()
