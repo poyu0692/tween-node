@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://j2csnabbdyfi"]
+
+[ext_resource type="Texture2D" uid="uid://d4dey6hfx7svq" path="res://assets/non_export_images/icon.svg" id="1_c10jv"]
+[ext_resource type="Script" uid="uid://4k0hkxllrx5e" path="res://addons/tween_node/scripts/tween_node.gd" id="2_8ldwc"]
+[ext_resource type="Script" uid="uid://cnqges4r3nqo4" path="res://addons/tween_node/scripts/data/tween_sequence.gd" id="3_617uk"]
+[ext_resource type="Script" uid="uid://be2ptyxmpam3p" path="res://addons/tween_node/scripts/base/tween_action.gd" id="4_c10jv"]
+[ext_resource type="Script" uid="uid://gkftb1qirheo" path="res://addons/tween_node/scripts/actions/tween_property.gd" id="5_wquy3"]
+[ext_resource type="Script" uid="uid://klvggbfvu8f" path="res://addons/tween_node/scripts/actions/tween_loop.gd" id="6_weg1u"]
+
+[sub_resource type="Resource" id="Resource_617uk"]
+resource_name = "➡️default::position => (320.0, 40.0) (0.8s)"
+script = ExtResource("5_wquy3")
+property = "position"
+to = Vector2(320, 40)
+duration = 0.8
+as_relative = true
+metadata/_custom_type_script = "uid://gkftb1qirheo"
+
+[sub_resource type="Resource" id="Resource_c10jv"]
+resource_name = "🔀default::scale => (1.0, 1.0) (0.8s)"
+script = ExtResource("5_wquy3")
+property = "scale"
+to = Vector2(1, 1)
+duration = 0.8
+parallel = true
+metadata/_custom_type_script = "uid://gkftb1qirheo"
+
+[sub_resource type="Resource" id="Resource_bro1s"]
+resource_name = "➡️default::rotation_degrees => 30.0 (0.15s)"
+script = ExtResource("5_wquy3")
+property = "rotation_degrees"
+to = 30.0
+duration = 0.15
+metadata/_custom_type_script = "uid://gkftb1qirheo"
+
+[sub_resource type="Resource" id="Resource_c2via"]
+resource_name = "➡️default::rotation_degrees => -30.0 (0.15s)"
+script = ExtResource("5_wquy3")
+property = "rotation_degrees"
+to = -30.0
+duration = 0.15
+metadata/_custom_type_script = "uid://gkftb1qirheo"
+
+[sub_resource type="Resource" id="Resource_2e6ww"]
+resource_name = "🔁Loop: 2 times"
+script = ExtResource("6_weg1u")
+actions = Array[ExtResource("4_c10jv")]([SubResource("Resource_bro1s"), SubResource("Resource_c2via")])
+metadata/_custom_type_script = "uid://klvggbfvu8f"
+
+[sub_resource type="Resource" id="Resource_352fy"]
+resource_name = "➡️default::rotation_degrees => 0.0 (0.15s)"
+script = ExtResource("5_wquy3")
+property = "rotation_degrees"
+to = 0.0
+duration = 0.15
+metadata/_custom_type_script = "uid://gkftb1qirheo"
+
+[sub_resource type="Resource" id="Resource_yk6w5"]
+script = ExtResource("3_617uk")
+steps = Array[ExtResource("4_c10jv")]([SubResource("Resource_617uk"), SubResource("Resource_c10jv"), SubResource("Resource_2e6ww"), SubResource("Resource_352fy")])
+metadata/_custom_type_script = "uid://cnqges4r3nqo4"
+
+[node name="Node2D" type="Node2D" unique_id=465214092]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=881258666]
+position = Vector2(260, 180)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_c10jv")
+
+[node name="TweenNode" type="Node" parent="." unique_id=1267785451 node_paths=PackedStringArray("target_map")]
+script = ExtResource("2_8ldwc")
+target_map = {
+&"default": NodePath("../Sprite2D")
+}
+sequence = SubResource("Resource_yk6w5")

@@ -1,0 +1,48 @@
+name: TweenNode Tests
+
+on:
+  push:
+    paths:
+      - "addons/tween_node/**"
+      - "addons/gdUnit4/**"
+      - ".github/workflows/tween-node-tests.yml"
+      - "project.godot"
+  pull_request:
+    paths:
+      - "addons/tween_node/**"
+      - "addons/gdUnit4/**"
+      - ".github/workflows/tween-node-tests.yml"
+      - "project.godot"
+  workflow_dispatch:
+
+jobs:
+  gdunit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.6.0
+          use-dotnet: false
+
+      - name: Import Project Assets
+        run: $GODOT4 --headless --path . --import
+
+      - name: Run TweenNode GdUnit Tests
+        run: |
+          $GODOT4 --headless --path . -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            --ignoreHeadlessMode \
+            -a res://addons/tween_node/tests \
+            -c \
+            -rd res://reports
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdunit-reports
+          path: reports
+          if-no-files-found: ignore

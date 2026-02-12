@@ -1,0 +1,15 @@
+# Normalize EOL for all files that Git considers text files.
+* text=auto eol=lf
+
+# Keep Asset Library package focused on the addon itself.
+.github export-ignore
+.godot export-ignore
+reports export-ignore
+scripts export-ignore
+examples export-ignore
+project.godot export-ignore
+assets/non_export_images export-ignore
+addons/gdUnit4 export-ignore
+addons/GDQuest_GDScript_formatter export-ignore
+addons/tween_node/tests export-ignore
+AGENTS.md export-ignore
